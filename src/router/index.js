@@ -1,6 +1,5 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-let a = require('../assets/js/LocationStore.js')
 
 const originalPush = VueRouter.prototype.push
 VueRouter.prototype.push = function push(location) {
@@ -25,14 +24,24 @@ const routes = [
         component:() =>import('../components/content/HomeContent')
       },
       {
-        path: "/feedback",
-        name:"feedback",
-        component:() =>import("../views/FeedBack")
+        path: '/video',
+        name: 'videotab',
+        component:() =>import('../components/content/VideoPlayer')
       },
       {
-        path:'/charts',
-        name: 'char',
-        component: () =>import('../components/common/charts.vue')
+        path: '/dynamic',
+        name: "dynamic",
+        component:()=>import("../components/content/Dynamic")
+      },
+      {
+        path: "/feedback",
+        name:"feedback",
+        component:() =>import("../components/content/FeedBack")
+      },
+      {
+        path:'/deal',
+        name: 'deal',
+        component: () =>import('../components/content/Deal')
       },
       {
         path: '/Preselect',
@@ -55,8 +64,6 @@ const router = new VueRouter({
 })
 
 router.beforeEach((to,from,next)=>{
-  console.log(to,'到哪里')
-  console.log(to.path)
   console.log(sessionStorage.getItem('Token'))
   console.log(!sessionStorage.getItem('Token'))
   if(!sessionStorage.getItem('Token')){

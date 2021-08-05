@@ -1,68 +1,62 @@
 <template>
-<div class="loginhome">
-  <div class="login-right">
-    <img src="../assets/image/backgroundimag.jpg" style="width: 100%;height: 100%;border-radius: 10px 0 0 10px"/>
+<div class="loginhome" >
+
+  <div class="videoDiv">
+    <video style="object-fit: fill" width="100%" height="100%" autoplay="autoplay" src="../assets/videos/bgvideo.mp4" muted  loop></video>
   </div>
-  <div class="login-left">
-    <div class="login-left-header">
-      <p>用户登录</p>
+
+    <div class="fromlogin">
+      <el-link type="success" disabled style="margin-top: 10px;margin-bottom: 20px">您距离加入我们还差一步</el-link>
+     <el-form>
+       <el-form-item>
+         <el-input prefix-icon="el-icon-user" placeholder="请输入用户名" v-model="user"></el-input>
+       </el-form-item>
+       <el-form-item>
+         <el-input prefix-icon="el-icon-s-finance" placeholder="请输入密码" v-model="pwd"></el-input>
+       </el-form-item>
+       <el-form-item>
+         <div class="btnItem">
+           <el-button type="success" size="mini" @click="login">登录</el-button>
+           <el-button type="info" size="mini" @click="LoginClear">清空</el-button>
+         </div>
+       </el-form-item>
+     </el-form>
     </div>
-    <div class="login-left-from">
-      <form class="user-form">
-        <div>
-          <el-input v-model="inputuser" icon="el-icon-search" placeholder="请输入用户名" prefix-icon="el-icon-service" style="margin: 5px"></el-input>
-        </div>
-        <div>
-          <el-input icon="el-icon-search" v-model="inputpwd" placeholder="请输入密码" prefix-icon="el-icon-service" style="margin: 5px"></el-input>
-        </div>
-        <el-switch
-            v-model="value3"
-            active-text="在线"
-            inactive-text="隐身">
-        </el-switch>
-        <div class="form-btn">
-          <el-button type="primary" size="mini" style="width: 100px;height: 40px">注册</el-button>
-          <el-button type="success"size="mini" style="width: 100px;height: 40px" @click="login(inputuser,inputpwd)">登录</el-button>
-        </div>
-      </form>
-    </div>
-  </div>
 
 </div>
 </template>
 
 <script>
 import request from "@/network/request";
-
-let a = require('../assets/js/LocationStore.js')
+let cach = require('../assets/js/LocationStore.js')
 export default {
 name: "Home-Login",
   data() {
   return {
-      input:'',
-      value3: true,
-      value4: true,
-      inputuser: '17608242415',
-      inputpwd: '123456'
+      user: 'admin',
+      pwd: '123456'
   }
   },
   methods: {
-    onSubmit() {
-      console.log('submit!');
-    },
-    login (u,p) {
-      request({method:'get',url:'http://192.168.4.49:8883/demo/auto/'}).then((value)=>{
-        console.log(value)
+    login () {
+      request({method:'POST',url:'user/',data:{
+          "user_mobile":this.user,
+          "password":this.pwd
+        }}).then((value)=>{
+          console.log(value)
+          if(value.data.msg =="成功" && value.data.token != null){
+            cach.SetsessionStore("token",value.data.token)
+            this.$router.push('/home')
+          }else{
+            this.$message.error(value.data.msg);
+            this.$router.push('/')
+          }
       })
-      if(u==='17608242415'&& p==='123456'){
-        a.SetsessionStore("Token",111)
-        this.$router.push('/home')
-      }else {
-        alert("密码错误")
-        console.log("失败状态",this.$store.state.loginstatue)
-        this.$router.push('/')
-      }
 
+    },
+    LoginClear(){
+      this.user = ""
+      this.pwd = ""
     }
   }
 }
@@ -70,50 +64,33 @@ name: "Home-Login",
 
 <style scoped>
 .loginhome {
-  width: 600px;
-  height: 250px;
-  border-radius: 10px;
-  box-shadow: 0px 0px 3px rebeccapurple;
-  display: flex;
-}
-.login-right {
-  flex: 6;
-  border: 1px solid rebeccapurple;
-  border-radius:10px 0 0 10px;
-}
-.login-left {
-  flex: 4;
-  border: 1px solid rebeccapurple;
-  border-radius:0 10px 10px 0;
-  display: flex;
-  flex-direction: column;
-}
-.login-left-header {
-  display: flex;
-  flex: 2;
-  flex-direction: row;
-  justify-content: center;
-  align-content: center;
-  line-height: 50px;
-  font-size: 15px;
-}
-.login-left-from {
-  flex: 8;
-  padding: 10px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-.user-form{
-  width:80%;
+  width: 100%;
   height: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
 }
-.form-btn {
+.videoDiv{
+  width: 100%;
+  height: 100%;
+  position: relative;
+  z-index: 10;
+}
+.fromlogin{
+  position: absolute;
+  top: 200px;
+  right: 0;
+  padding: 10px;
+  margin: 3px;
+  z-index: 10000;
+  opacity: 0.9;
+  border-radius: 5px;
+  width: 250px;
+  height:200px;
+  background-color: white;
+  text-align: center;
+}
+.btnItem{
   display: flex;
   flex-direction: row;
-  margin-top: 10px;
+  width: 100%;
+  justify-content: center;
 }
 </style>

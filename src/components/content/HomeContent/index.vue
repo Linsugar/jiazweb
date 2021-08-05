@@ -1,21 +1,28 @@
 <template>
   <div style="width: 100%;height: 100%">
-    <el-carousel :interval="4000" type="card" height="200px">
-      <el-carousel-item v-for="item in 6" :key="item">
-        <h3 class="medium" >7</h3>
+    <el-carousel :interval="4000" type="card" height="250px">
+
+      <el-carousel-item v-for="video_item in videoList" :key="video_item">
+        <router-link :to="{name:'videotab',params:{data:video_item}}">
+        <el-image :src="video_item.video_Image" class="medium"> </el-image>
+        </router-link>
       </el-carousel-item>
     </el-carousel>
     <el-divider content-position="left">优秀好文</el-divider>
     <el-collapse accordion>
-      <div style="display: flex;flex-direction: row;padding: 3px" v-for="item in 10">
+      <div style="display: flex;flex-direction: row;padding: 3px" v-for="item in articleList">
         <div style="flex: 1">
-          <el-image :src="urls" style="border-radius: 5px;margin-right: 5px"></el-image>
+          <el-image :src="item.content.news_item[0].thumb_url" style="border-radius: 5px;margin-right: 5px"></el-image>
         </div>
         <div style="flex: 19">
-          <el-collapse-item title="效率 Efficiency">
-            <div>简化流程：设计简洁直观的操作流程；</div>
-            <div>清晰明确：语言表达清晰且表意明确，让用户快速理解进而作出决策；</div>
-            <div>帮助用户识别：界面简单直白，让用户快速识别而非回忆，减少用户记忆负担。</div>
+          <el-collapse-item :title="item.content.news_item[0].title">
+            <div>
+              作者：{{item.content.news_item[0].author}}
+            </div>
+            <el-link :href="item.content.news_item[0].url" type="success">
+              <div>{{ item.content.news_item[0].digest.length == 0?"请直接跳转页面":item.content.news_item[0].digest }}</div>
+            </el-link>
+
           </el-collapse-item>
         </div>
       </div>
@@ -26,16 +33,48 @@
 </template>
 
 <script>
+import request from "@/network/request";
+
 export default {
 name: "index",
   data(){
   return {
-
     activeIndex: '1',
     activeIndex2: '1',
     urls: 'https://fuss10.elemecdn.com/a/3f/3302e58f9a181d2509f3dc0fa68b0jpeg.jpeg',
+    articleList:[],
+    videoList:[]
   }
-  }
+  },
+  created() {
+    this.getwxArticl()
+    this.getvideo()
+  },
+  methods:{
+  getwxArticl(){
+  //  获取微信文章
+    request({
+      url:"wxarticle/",
+      params:{
+        "count":5
+      },
+      method:'GET'
+    }).then(value => {
+      let Data = JSON.parse(value.data)
+      this.articleList =Data.item
+    })
+  },
+    getvideo(){
+      request({
+        url:"videolist/",
+        method:'GET'
+      }).then(value => {
+        console.log(value)
+        this.videoList = value.data
+      })
+    },
+  },
+
 }
 </script>
 
@@ -45,7 +84,7 @@ name: "index",
   color: #475669;
   font-size: 14px;
   opacity: 0.75;
-  line-height: 200px;
+  line-height: 300px;
   margin: 0;
   background-image: url("https://fuss10.elemecdn.com/a/3f/3302e58f9a181d2509f3dc0fa68b0jpeg.jpeg");
 }

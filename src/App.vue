@@ -1,6 +1,10 @@
 <template>
   <div id="app">
     <router-view></router-view>
+    <el-button
+        type="primary"
+        v-loading.fullscreen.lock="loadState">
+    </el-button>
     </div>
 </template>
 
@@ -11,14 +15,20 @@ export default {
   components: {
 
   },
-  data(){
-    return {
-
+  computed:{
+    loadState(){
+      return this.$store.state.loading
     }
   },
-  created() {
+  data(){
+    return {
+      fullscreenLoading:this.$store.state.loading
+    }
+  },
+  methods:{
 
-  }
+  },
+
 }
 </script>
 
@@ -27,8 +37,5 @@ export default {
   height: 100%;
   width: 100%;
   overflow: hidden;
-  display: flex;
-  justify-content: center;
-  align-items: center;
 }
 </style>
